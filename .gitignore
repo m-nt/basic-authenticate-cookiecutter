@@ -1,0 +1,4 @@
+virtual
+.env
+__pycache__
+test.py
