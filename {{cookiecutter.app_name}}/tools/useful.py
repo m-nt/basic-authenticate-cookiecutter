@@ -1,12 +1,17 @@
 import motor.motor_asyncio
-from models.base_models import User, ReturnUser, RegisterUser
+from models.base_models import User, ReturnUser, RegisterUser, LoginUser
 from passlib.context import CryptContext
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 import re
+from datetime import datetime, timedelta
 
 
-def get_user(client: motor.motor_asyncio.AsyncIOMotorClient) -> User:
-    pass
+def credentials_exception():
+    HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 
 async def create_user(
@@ -15,6 +20,9 @@ async def create_user(
     created_user = User.parse_obj(user)
     res = await db["users"].insert_one(created_user)
     new_user = await db["users"].find_one({"_id": res._id})
+    if new_user:
+        return RegisterUser.parse_obj(new_user)
+    return RegisterUser({})
 
 
 def verify_password(pwd_context: CryptContext, plain_password, hashed_password):
@@ -49,5 +57,3 @@ def validateUsername(username: str):
         raise HTTPException(
             400, "Username most not include (&=_'-+,<>) and or more than one '.'!"
         )
-
-

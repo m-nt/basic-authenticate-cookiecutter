@@ -54,6 +54,7 @@ class LoginUser(BaseModel):
     username: Optional[str]
     email: Optional[EmailStr]
     password: str
+    token: Optional[str]
 
     class Config:
         json_encoders = {ObjectId: str}
