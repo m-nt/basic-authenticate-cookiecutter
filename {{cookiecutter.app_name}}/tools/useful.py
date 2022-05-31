@@ -4,25 +4,23 @@ from passlib.context import CryptContext
 from fastapi import HTTPException, status
 import re
 from datetime import datetime, timedelta
-
-
-def credentials_exception():
-    HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+from fastapi.encoders import jsonable_encoder
 
 
 async def create_user(
-    db: motor.motor_asyncio.AsyncIOMotorClient, user: RegisterUser
+    client: motor.motor_asyncio.AsyncIOMotorClient,
+    user: RegisterUser,
+    pwd_context: CryptContext,
 ) -> ReturnUser:
+    db = client["{{cookiecutter.app_name}}"]
     created_user = User.parse_obj(user)
+    created_user.password = get_password_hash(pwd_context, created_user.password)
+    created_user = jsonable_encoder(created_user)
     res = await db["users"].insert_one(created_user)
-    new_user = await db["users"].find_one({"_id": res._id})
+    new_user = await db["users"].find_one({"_id": res.inserted_id})
     if new_user:
-        return RegisterUser.parse_obj(new_user)
-    return RegisterUser({})
+        return ReturnUser.parse_obj(new_user)
+    return ReturnUser({})
 
 
 def verify_password(pwd_context: CryptContext, plain_password, hashed_password):
@@ -53,7 +51,7 @@ def valitdatePassword(passtext: str):
 
 def validateUsername(username: str):
     res = re.findall(r"[&=_\'-+,<>]+|\.{2,}", username)
-    if len(res) <= 0:
+    if len(res) > 0:
         raise HTTPException(
             400, "Username most not include (&=_'-+,<>) and or more than one '.'!"
         )

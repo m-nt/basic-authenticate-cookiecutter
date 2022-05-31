@@ -25,7 +25,6 @@ class User(BaseModel):
     password: str
     email: Union[EmailStr, None] = None
     full_name: Union[str, None] = None
-    deactive: Union[bool, None] = None
     token: Union[str, None] = None
 
     class Config:
@@ -33,7 +32,7 @@ class User(BaseModel):
 
 
 class RegisterUser(BaseModel):
-    username: str
+    username: Union[str, None] = None
     password: str
     email: Union[EmailStr, None] = None
     full_name: Union[str, None] = None
@@ -44,7 +43,7 @@ class UpdateUser(BaseModel):
     password: Optional[str]
     email: Optional[EmailStr]
     full_name: Optional[str]
-    deactive: Optional[str]
+    token: Optional[str]
 
     class Config:
         json_encoders = {ObjectId: str}
@@ -54,7 +53,6 @@ class LoginUser(BaseModel):
     username: Optional[str]
     email: Optional[EmailStr]
     password: str
-    token: Optional[str]
 
     class Config:
         json_encoders = {ObjectId: str}
