@@ -1,3 +1,4 @@
 {
-    "app_name": "Twatter"
+    "app_name": "Example",
+    "secret_key": "openssl rand -hex 32"
 }
