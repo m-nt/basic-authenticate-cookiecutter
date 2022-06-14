@@ -62,7 +62,7 @@ async def loggin(pwd_context: CryptContext, user: LoginUser, type: str):
 
 dotenv.load_dotenv()
 client = motor.motor_asyncio.AsyncIOMotorClient(os.getenv("MONGODB_URL"))
-db = client["{{cookiecutter.app_name}}"]
+db = client["twatter"]
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
