@@ -12,7 +12,7 @@ async def create_user(
     user: RegisterUser,
     pwd_context: CryptContext,
 ) -> ReturnUser:
-    db = client["{{cookiecutter.app_name}}"]
+    db = client["twatter"]
     created_user = User.parse_obj(user)
     created_user.password = get_password_hash(pwd_context, created_user.password)
     created_user = jsonable_encoder(created_user)
